@@ -11,25 +11,22 @@ Cenário B - chamada via asyncio.to_thread():
 """
 import asyncio
 import time
+from utils import print_timestamp
 
 def tarefa_pesada(nome: str) -> int:
-    ts = time.strftime("%H:%M:%S")
-    print(f"[{ts}] tarefa_pesada '{nome}' iniciando (3s)")
+    print_timestamp(f"tarefa_pesada '{nome}' iniciando (3s)")
     time.sleep(3)
     resultado = sum(range(1_000_000))
-    ts = time.strftime("%H:%M:%S")
-    print(f"[{ts}] tarefa_pesada '{nome}' concluída (resultado={resultado})")
+    print_timestamp(f"tarefa_pesada '{nome}' concluída (resultado={resultado})")
 
 async def coroutine(label: str):
     await asyncio.sleep(1)
-    ts = time.strftime("%H:%M:%S")
-    print(f"[{ts}] coroutine '{label}' executou")
+    print_timestamp(f"coroutine '{label}' executou")
 
 async def cenario_a():
     print("--- CENÁRIO A: chamada síncrona direta ---")
     asyncio.create_task(coroutine("A"))
-    ts = time.strftime("%H:%M:%S")
-    print(f"[{ts}] chamando tarefa_pesada diretamente")
+    print_timestamp("chamando tarefa_pesada diretamente")
     tarefa_pesada("A")
     await asyncio.sleep(2)
     print("coroutine só executou depois que tarefa_pesada terminou")
@@ -37,8 +34,7 @@ async def cenario_a():
 async def cenario_b():
     print("--- CENÁRIO B: via asyncio.to_thread() ---")
     asyncio.create_task(coroutine("B"))
-    ts = time.strftime("%H:%M:%S")
-    print(f"[{ts}] delegando tarefa_pesada para thread com asyncio.to_thread()")
+    print_timestamp("delegando tarefa_pesada para thread com asyncio.to_thread()")
     await asyncio.to_thread(tarefa_pesada, "B")
     print("coroutine executou durante a tarefa_pesada")
 
